@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Wald – Anmeldeübersicht – Kletterwald Paderborn</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--card:#fff;--border:rgba(0,0,0,.1);--text:#1a1a1a;--muted:#6b7280;
+  --primary:#030213;--ibg:#f3f3f5;--radius:10px;
+  --grbg:#f0fdf4;--grbr:#bbf7d0;--grtx:#166534;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#wrap{max-width:980px;margin:0 auto;padding:20px 18px 60px}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+h1{font-size:20px;font-weight:700}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.clock{font-size:12px;color:var(--muted);text-align:right}
+.clock b{color:var(--text);font-variant-numeric:tabular-nums}
+
+.wf-cta{flex-shrink:0;margin-left:auto;align-self:center;background:#fff5f5;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;transition:background .15s;max-width:260px}
+.wf-cta:hover{background:#fee2e2}
+
+.summary{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px}
+.summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.summary-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.summary-grid{display:flex;flex-wrap:wrap;gap:8px}
+.sum-total{font-size:32px;font-weight:800;color:var(--primary);line-height:1;font-variant-numeric:tabular-nums}
+.sum-chip{background:var(--ibg);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;display:flex;gap:6px;align-items:center}
+.sum-chip .n{color:var(--primary);font-weight:700}
+
+.wf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.wf-overlay.open{display:flex}
+.wf-modal{background:var(--card);border-radius:var(--radius);padding:20px 22px;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.wf-modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.wf-field-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+.wf-target-input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:13px;font-family:inherit;outline:none;color:var(--text)}
+.wf-target-input:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.wf-stars{display:flex;gap:4px;padding:2px 0 4px}
+.wf-textarea{width:100%;min-height:80px;resize:vertical;padding:7px 10px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:13px;font-family:inherit;outline:none;line-height:1.4;color:var(--text)}
+.wf-textarea:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.wf-textarea:disabled{opacity:.5;cursor:not-allowed}
+.wf-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}
+.wf-hint{font-size:10px;color:var(--muted)}
+.wf-send-btn{background:var(--primary);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.wf-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.wf-cancel-btn{background:var(--ibg);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+
+.olist{display:flex;flex-direction:column;gap:9px}
+.ocard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;transition:opacity .3s,filter .3s}
+.ocard.grayed{opacity:.55;filter:grayscale(70%)}
+.oin{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.oleft{flex-shrink:0;width:190px}
+.oname{font-size:15px;font-weight:700;margin-bottom:4px}
+.ocount{display:inline-block;background:var(--grbg);color:var(--grtx);border:1px solid var(--grbr);border-radius:99px;padding:2px 9px;font-size:11px;font-weight:700;margin-bottom:5px}
+.otime{font-size:11px;color:var(--muted);line-height:1.4}
+.oright{flex:1;min-width:180px;border-left:1px solid var(--border);padding-left:12px}
+.orow{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:2px 0}
+.orow-n{color:var(--text)}.orow-q{font-weight:700;color:var(--muted);white-space:nowrap}
+.oempty-items{font-size:11px;color:var(--muted);font-style:italic}
+
+.onote-col{width:190px;flex-shrink:0;border-left:1px solid var(--border);padding-left:12px;display:flex;flex-direction:column;gap:6px}
+.onote-lbl{font-size:9px;font-weight:600;color:var(--muted);display:block}
+.note-input{width:100%;min-height:52px;resize:vertical;padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:12px;font-family:inherit;outline:none;line-height:1.4}
+.note-input:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.note-input.has-note{background:#fef9c3;border-color:#facc15}
+.note-input.has-note:focus{border-color:#eab308;box-shadow:0 0 0 2px rgba(234,179,8,.18)}
+
+.cd-badge{align-self:flex-start;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.cd-badge.cd-ok{background:var(--grbg);color:var(--grtx);border:1px solid var(--grbr)}
+.cd-badge.cd-warn{background:#fefce8;color:#854d0e;border:1px solid #fde68a}
+.cd-badge.cd-exp{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+
+.ein-check{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;padding:4px 8px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);user-select:none;transition:background .15s,border-color .15s,color .15s}
+.ein-check input{width:14px;height:14px;flex-shrink:0;accent-color:#16a34a;cursor:pointer}
+.ein-check.done{background:var(--grbg);border-color:var(--grbr);color:var(--grtx)}
+
+.oempty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#ccc;border-radius:99px}
+
+@media (max-width:640px){
+  .oleft{width:100%}
+  .oright{border-left:none;padding-left:0;border-top:1px dashed var(--border);padding-top:8px;margin-top:4px}
+  .onote-col{width:100%;border-left:none;padding-left:0;border-top:1px dashed var(--border);padding-top:8px;margin-top:4px}
+  .wf-cta{margin-left:0;width:100%;max-width:100%}
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <div>
+      <h1>🌲 Anmeldeübersicht – Wald</h1>
+      <div class="sub">Alle Anmeldungen des heutigen Tages (Früh- &amp; Spätschicht)</div>
+    </div>
+    <div class="clock">Stand<br><b id="clock">–:–:–</b></div>
+  </header>
+
+  <div class="summary">
+    <div class="summary-top">
+      <div>
+        <div class="summary-lbl">Kletterer heute gesamt</div>
+        <div class="summary-grid" id="summary-grid"></div>
+      </div>
+      <button class="wf-cta" id="wf-cta-btn" onclick="openWfModal()">📋 Bitte hinterlasse der letzten Waldschicht ein Feedback</button>
+    </div>
+  </div>
+
+  <!-- WALD-FEEDBACK POPUP -->
+  <div class="wf-overlay" id="wf-overlay" onclick="if(event.target===this)closeWfModal()">
+    <div class="wf-modal">
+      <div class="wf-modal-title">Feedback zur letzten Waldschicht</div>
+      <label class="wf-field-lbl" for="wf-own">Dein Name</label>
+      <input type="text" id="wf-own" class="wf-target-input" placeholder="Dein Name…" oninput="onWfFieldInput()" autocomplete="off">
+
+      <label class="wf-field-lbl" for="wf-target">Wer hatte die letzte Waldschicht?</label>
+      <input type="text" id="wf-target" list="wf-suggestions" class="wf-target-input" placeholder="Name der letzten Schicht…" oninput="onWfFieldInput()" autocomplete="off">
+      <datalist id="wf-suggestions"></datalist>
+
+      <label class="wf-field-lbl">Bewertung</label>
+      <div id="wf-stars" class="wf-stars"></div>
+
+      <label class="wf-field-lbl" for="wf-text">Feedback</label>
+      <textarea id="wf-text" class="wf-textarea" disabled placeholder="z.B. Der Mülleimer im Wagen wurde nicht ausgeleert, der Wagen wurde abends nicht ordentlich gepackt, der Müll im Wald wurde nicht weggepickt…" oninput="onWfFieldInput()"></textarea>
+
+      <div class="wf-actions">
+        <span class="wf-hint" id="wf-hint"></span>
+        <div style="display:flex;gap:8px">
+          <button class="wf-cancel-btn" onclick="closeWfModal()">Abbrechen</button>
+          <button class="wf-send-btn" id="wf-send-btn" disabled onclick="sendWaldFeedback()">Senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="olist" id="olist">
+    <div class="oempty">Lade Anmeldungen…</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, arrayUnion
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyANABs6v38UkBo_CXR_qt_KsY_1yCVr5VQ",
+  authDomain: "anmeldungensyncer.firebaseapp.com",
+  projectId: "anmeldungensyncer",
+  storageBucket: "anmeldungensyncer.firebasestorage.app",
+  messagingSenderId: "444676738503",
+  appId: "1:444676738503:web:2e0ba915c55c5305b71de2",
+  measurementId: "G-NZ80P58Y12"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.fbCollection = collection;
+window.fbDoc = doc;
+window.fbSetDoc = setDoc;
+window.fbDeleteDoc = deleteDoc;
+window.fbOnSnapshot = onSnapshot;
+window.fbArrayUnion = arrayUnion;
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<script>
+// ── HELFER ──────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtTs(d){const dt=d instanceof Date?d:new Date(d);if(!dt||isNaN(dt))return'–';return dt.toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dateStrOf(v){const d=v instanceof Date?v:new Date(v);if(!d||isNaN(d))return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// Robuste ISO-Umwandlung: new Date(ungültigerWert).toISOString() wirft eine Exception und würde
+// dadurch die komplette Listendarstellung abbrechen (die zuvor berechnete Summe bliebe aber stehen –
+// genau das Symptom "Summe stimmt, Liste fehlt"). Bei ungültigem Zeitstempel wird stattdessen
+// die aktuelle Zeit als Fallback verwendet, damit die Anmeldung trotzdem angezeigt wird.
+function safeIso(v){const d=v instanceof Date?v:new Date(v);return isNaN(d)?new Date().toISOString():d.toISOString();}
+
+// Kiosk-Artikel (Wasser, Softdrink, Corny), Jahreskarten und "Sonstiges" (Gutschein/
+// freier Betrag) sind keine Kletterer -> ausblenden
+const YEAR_CARD_IDS=['yc45','yc611','yc1217','ycadult'];
+function isClimberItem(it){
+  if(!it) return false;
+  if(it.type==='custom') return false;
+  if(it.id && it.id.indexOf('kiosk-')===0) return false;
+  if(it.id && YEAR_CARD_IDS.indexOf(it.id)>=0) return false;
+  return true;
+}
+
+// Zwergenticket besteht aus 1 Erwachsenem + 1 Kind -> zählt als 2 Kletterer
+function climberWeight(it){ return (it && it.id==='dwarf') ? 2 : 1; }
+function climberQty(it){ return ((it&&it.qty)||0) * climberWeight(it); }
+
+// ── COUNTDOWN (2,5 Std. ab Anmeldezeitpunkt) – identisch zur Kasse ───
+function countdownInfo(tsVal){
+  const start=new Date(tsVal).getTime();
+  const totalMs=2.5*60*60*1000;
+  const remainMs=totalMs-(Date.now()-start);
+  const absMin=Math.floor(Math.abs(remainMs)/60000);
+  const h=Math.floor(absMin/60), m=absMin%60;
+  const txt=(remainMs<0?'-':'')+h+':'+String(m).padStart(2,'0');
+  let cls='cd-ok';
+  if(remainMs<=0) cls='cd-exp';
+  else if(remainMs<=15*60000) cls='cd-warn';
+  const farExpired=remainMs<=-60*60000; // -1 Std. erreicht -> Anmeldung komplett ausgrauen
+  return {txt,cls,farExpired};
+}
+function updateCountdowns(){
+  allOrders().forEach(o=>{
+    const el=document.getElementById('cd-'+o.id);
+    if(!el)return;
+    const info=countdownInfo(o.ts);
+    el.textContent=info.txt;
+    el.className='cd-badge '+info.cls;
+    const card=document.getElementById('oc-'+o.id);
+    if(card) card.classList.toggle('grayed',info.farExpired);
+  });
+}
+setInterval(updateCountdowns,15000);
+
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(updateClock,1000);updateClock();
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let liveOrders=[];        // aktuell laufende Kassenschicht (Firestore "orders")
+let archivedTodayOrders=[]; // bereits beendete Schicht(en) des heutigen Tages ("shifts")
+let notizen={};
+let notizTimers={};
+let notizenRawDocs={}; // orderId -> ts der zugehörigen Anmeldung (für Tagesgrenzen-Cleanup)
+let einweisungen={}; // orderId -> true/false (Einweisung erhalten)
+let mitarbeiterListe=[]; // aus Firestore "mitarbeiter" – für Namensvorschläge beim Wald-Feedback
+
+function allOrders(){
+  return [...liveOrders,...archivedTodayOrders].sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+}
+
+// ── FIRESTORE SYNC ───────────────────────────────────────────────────
+function startRealtimeSync(){
+  window.fbOnSnapshot(window.fbCollection(window.db,"orders"), snapshot=>{
+    liveOrders=[];
+    snapshot.forEach(d=>{
+      const data=d.data();
+      liveOrders.push({
+        firestoreId:d.id,
+        ...data,
+        ts:data.ts?(data.ts.toDate?data.ts.toDate():new Date(data.ts)):new Date()
+      });
+    });
+    render();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"shifts"), snapshot=>{
+    const today=todayStr();
+    archivedTodayOrders=[];
+    snapshot.forEach(d=>{
+      const s=d.data();
+      if(s.sDate===today && Array.isArray(s.orders)){
+        // Bearbeitete Anmeldungen werden beim Speichern teils als Firestore-Timestamp-Objekt
+        // statt als ISO-String abgelegt. new Date(o.ts) kann ein solches Objekt nicht direkt
+        // umwandeln (Ergebnis: "Invalid Date" -> keine Zeit wird angezeigt). Daher wie beim
+        // Live-Orders-Listener zunächst auf .toDate() prüfen, bevor in ein Date umgewandelt wird.
+        // Der ursprüngliche Anmeldezeitpunkt (ts) bleibt dabei erhalten – der reine
+        // Bearbeitungszeitpunkt (editedTs) spielt für die Darstellung keine Rolle.
+        s.orders.forEach(o=>archivedTodayOrders.push({...o,ts:o.ts?(o.ts.toDate?o.ts.toDate():new Date(o.ts)):new Date()}));
+      }
+    });
+    render();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"notizen"), snapshot=>{
+    const map={};
+    notizenRawDocs={};
+    snapshot.forEach(d=>{
+      const data=d.data();
+      map[d.id]=data.text||'';
+      // data.ts = Anmeldezeitpunkt der zugehörigen Anmeldung -> bestimmt, zu welchem Tag die Notiz gehört
+      notizenRawDocs[d.id]=data.ts||null;
+    });
+    notizen=map;
+    applyNotizenToDom();
+    purgeStaleNotizen();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"einweisungen"), snapshot=>{
+    const map={};
+    const now=Date.now();
+    snapshot.forEach(d=>{
+      const data=d.data();
+      map[d.id]={done:!!data.done,updatedAt:data.updatedAt||null};
+      const t=data.ts?new Date(data.ts).getTime():null;
+      // Einweisungs-Status ist nur temporär – nach ~20 Std. automatisch entfernen
+      if(t && (now-t)>20*60*60*1000){
+        window.fbDeleteDoc(window.fbDoc(window.db,"einweisungen",d.id)).catch(()=>{});
+      }
+    });
+    einweisungen=map;
+    applyEinweisungenToDom();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"mitarbeiter"), snapshot=>{
+    mitarbeiterListe=[];
+    snapshot.forEach(d=>mitarbeiterListe.push({firestoreId:d.id,...d.data()}));
+    renderWfSuggestions();
+  });
+}
+function fmtTime(iso){
+  const d=iso?new Date(iso):null;
+  if(!d||isNaN(d))return'–:–';
+  return d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+function applyEinweisungenToDom(){
+  Object.keys(einweisungen).forEach(id=>{
+    const cb=document.getElementById('ein-'+id);
+    if(!cb)return;
+    const info=einweisungen[id]||{};
+    cb.checked=!!info.done;
+    const lbl=document.getElementById('einl-'+id);
+    if(lbl){
+      lbl.classList.toggle('done',!!info.done);
+      const textEl=lbl.querySelector('.ein-text');
+      if(textEl) textEl.textContent = info.done ? ('Einweisung: '+fmtTime(info.updatedAt)) : 'Einweisung erhalten';
+    }
+  });
+}
+function onEinweisungToggle(orderId,tsIso){
+  const cb=document.getElementById('ein-'+orderId);
+  if(!cb)return;
+  const val=cb.checked;
+  const nowIso=new Date().toISOString();
+  einweisungen[orderId]={done:val,updatedAt:nowIso};
+  const lbl=document.getElementById('einl-'+orderId);
+  if(lbl){
+    lbl.classList.toggle('done',val);
+    const textEl=lbl.querySelector('.ein-text');
+    if(textEl) textEl.textContent = val ? ('Einweisung: '+fmtTime(nowIso)) : 'Einweisung erhalten';
+  }
+  window.fbSetDoc(window.fbDoc(window.db,'einweisungen',orderId),{done:val,ts:tsIso,updatedAt:nowIso});
+}
+function applyNotizenToDom(){
+  Object.keys(notizen).forEach(id=>{
+    const el=document.getElementById('note-'+id);
+    if(!el)return;
+    if(el!==document.activeElement && el.value!==notizen[id]) el.value=notizen[id];
+    el.classList.toggle('has-note',(notizen[id]||'').trim().length>0);
+  });
+}
+function onNoteInput(orderId,tsIso){
+  const el=document.getElementById('note-'+orderId);
+  if(!el)return;
+  const val=el.value;
+  notizen[orderId]=val;
+  el.classList.toggle('has-note',val.trim().length>0);
+  clearTimeout(notizTimers[orderId]);
+  notizTimers[orderId]=setTimeout(()=>{
+    window.fbSetDoc(window.fbDoc(window.db,'notizen',orderId),{text:val,ts:tsIso,updatedAt:new Date().toISOString()});
+  },500);
+}
+
+// ── NOTIZEN-CLEANUP AM TAGESENDE ────────────────────────────────────
+// Notizen gehören inhaltlich zu einer Anmeldung eines bestimmten Tages (data.ts = Anmeldezeitpunkt).
+// Sobald der Kalendertag dieser Anmeldung vorbei ist (also nach Mitternacht), wird die Notiz
+// komplett aus Firestore gelöscht (nicht nur lokal ausgeblendet) und belegt keinen Speicher mehr.
+// Läuft sowohl bei jeder Firestore-Änderung als auch periodisch, damit die Löschung auch dann
+// greift, wenn die App über Mitternacht hinweg offen bleibt, ohne dass sich sonst etwas ändert.
+function purgeStaleNotizen(){
+  const today=todayStr();
+  Object.keys(notizenRawDocs).forEach(id=>{
+    const orderDay=dateStrOf(notizenRawDocs[id]);
+    if(orderDay && orderDay!==today){
+      window.fbDeleteDoc(window.fbDoc(window.db,'notizen',id)).catch(()=>{});
+      delete notizenRawDocs[id];
+      delete notizen[id];
+    }
+  });
+}
+setInterval(purgeStaleNotizen,5*60000);
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function buildSummary(orders){
+  let total=0;
+  orders.forEach(o=>{
+    (o.items||[]).filter(isClimberItem).forEach(it=>{
+      total+=climberQty(it);
+    });
+  });
+  const grid=document.getElementById('summary-grid');
+  grid.innerHTML=`<div class="sum-total">${total}</div>`;
+}
+
+function render(){
+  const allToday=allOrders();
+  // Anmeldungen mit Kletterer-Artikeln UND Anmeldungen auf Rechnung immer anzeigen –
+  // Rechnung-Buchungen bestehen teils nur aus einem freien "Sonstiges"-Betrag ohne
+  // einzeln erfasste Kletterer-Artikel, sollen aber trotzdem für den Wald sichtbar sein.
+  const orders=allToday.filter(o=>(o.items||[]).some(isClimberItem) || o.method==='rechnung');
+  const list=document.getElementById('olist');
+  buildSummary(allToday);
+
+  if(orders.length===0){
+    list.innerHTML='<div class="oempty">Noch keine Anmeldungen mit Kletterern heute vorhanden</div>';
+    return;
+  }
+
+  list.innerHTML=orders.map(o=>{
+    try{
+    const climberItems=(o.items||[]).filter(isClimberItem);
+    const climberCount=climberItems.reduce((s,it)=>s+climberQty(it),0);
+    const isRechnung=o.method==='rechnung';
+    let itemsHtml;
+    if(climberItems.length){
+      itemsHtml=climberItems.map(it=>`<div class="orow"><span class="orow-n">${esc(it.name)}${it.age?' ('+esc(it.age)+')':''}</span><span class="orow-q">${it.qty}×</span></div>`).join('');
+    } else if((o.items||[]).length){
+      // Keine klassifizierten Kletterer-Artikel (z.B. reine "Sonstiges"-Rechnungsbuchung) –
+      // stattdessen die vorhandenen Artikel/Posten anzeigen, damit die Buchung nachvollziehbar bleibt.
+      itemsHtml=(o.items||[]).map(it=>`<div class="orow"><span class="orow-n">${esc(it.name)}</span><span class="orow-q">${it.qty}×</span></div>`).join('');
+    } else {
+      itemsHtml='<div class="oempty-items">Keine Kletterer in dieser Anmeldung</div>';
+    }
+    const cd=countdownInfo(o.ts);
+    const tsIso=safeIso(o.ts);
+    const rechnungBadge=isRechnung?' <span style="display:inline-block;padding:2px 7px;border-radius:5px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;font-size:10px;font-weight:700;vertical-align:middle">Rechnung</span>':'';
+    return `
+    <div class="ocard${cd.farExpired?' grayed':''}" id="oc-${o.id}" style="${isRechnung?'background:#fff5f5;border-color:#fca5a5':''}">
+      <div class="oin">
+        <div class="oleft">
+          <div class="oname">${esc(o.name)}${rechnungBadge}</div>
+          <div class="ocount">${climberCount} Kletterer</div>
+          <div class="otime">${fmtTs(o.ts)}</div>
+        </div>
+        <div class="oright">${itemsHtml}</div>
+        <div class="onote-col">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span class="cd-badge ${cd.cls}" id="cd-${o.id}" title="Restzeit (2,5 Std. ab Anmeldung)">${cd.txt}</span>
+            <label class="ein-check${einweisungen[o.id]&&einweisungen[o.id].done?' done':''}" id="einl-${o.id}">
+              <input type="checkbox" id="ein-${o.id}" ${einweisungen[o.id]&&einweisungen[o.id].done?'checked':''} onchange="onEinweisungToggle('${o.id}','${tsIso}')">
+              <span class="ein-text">${einweisungen[o.id]&&einweisungen[o.id].done?('Einweisung: '+fmtTime(einweisungen[o.id].updatedAt)):'Einweisung erhalten'}</span>
+            </label>
+          </div>
+          <span class="onote-lbl">Notiz (Kasse &amp; Wald)</span>
+          <textarea class="note-input" id="note-${o.id}" placeholder="z.B. unpassende Gurte rausgegeben, Gurte waren nicht aufgezogen…" oninput="onNoteInput('${o.id}','${tsIso}')">${esc(notizen[o.id]||'')}</textarea>
+        </div>
+      </div>
+    </div>`;
+    }catch(err){
+      console.error('Fehler beim Rendern einer Anmeldung, wird übersprungen:',err,o);
+      return '';
+    }
+  }).join('');
+
+  updateCountdowns();
+  applyNotizenToDom();
+  applyEinweisungenToDom();
+}
+
+// ── LOKALER NAME DES AKTUELLEN WALDMITARBEITERS (nur localStorage, kein Server) ──
+const WALD_NAME_KEY='waldMitarbeiterName';
+function getWaldOwnName(){ return (localStorage.getItem(WALD_NAME_KEY)||'').trim(); }
+
+// ── WALD-FEEDBACK POPUP ─────────────────────────────────────────────
+let wfRating=0;
+function renderWfStars(n){
+  const box=document.getElementById('wf-stars');
+  if(!box)return;
+  let html='';
+  for(let i=1;i<=5;i++){
+    const gold=i<=n;
+    html+=`<button type="button" onclick="setWfRating(${i})" title="${i} Stern${i!==1?'e':''}" style="background:none;border:none;padding:2px;cursor:pointer;line-height:0">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="${gold?'#f5b301':'#d1d5db'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </button>`;
+  }
+  box.innerHTML=html;
+}
+function setWfRating(n){
+  wfRating=n;
+  renderWfStars(wfRating);
+  updateWfState();
+}
+function openWfModal(){
+  document.getElementById('wf-own').value=getWaldOwnName();
+  document.getElementById('wf-target').value='';
+  document.getElementById('wf-text').value='';
+  wfRating=0;
+  renderWfStars(0);
+  updateWfState();
+  document.getElementById('wf-overlay').classList.add('open');
+}
+function closeWfModal(){
+  document.getElementById('wf-overlay').classList.remove('open');
+}
+function renderWfSuggestions(){
+  const dl=document.getElementById('wf-suggestions');
+  if(!dl)return;
+  const names=[...new Set(
+    mitarbeiterListe
+      .filter(m=>Array.isArray(m.waldFeedback)&&m.waldFeedback.length>0)
+      .map(m=>m.name)
+      .filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b,'de'));
+  dl.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+}
+function onWfFieldInput(){
+  const v=document.getElementById('wf-own').value;
+  localStorage.setItem(WALD_NAME_KEY,v);
+  updateWfState();
+}
+function updateWfState(){
+  const own=(document.getElementById('wf-own').value||'').trim();
+  const target=(document.getElementById('wf-target').value||'').trim();
+  const text=(document.getElementById('wf-text').value||'').trim();
+  const textArea=document.getElementById('wf-text');
+  const sendBtn=document.getElementById('wf-send-btn');
+  const hint=document.getElementById('wf-hint');
+  const canType=own.length>0 && target.length>0;
+  textArea.disabled=!canType;
+  if(!own) hint.textContent='Bitte deinen Namen eintragen';
+  else if(!target) hint.textContent='Bitte Namen der letzten Waldschicht eintragen';
+  else if(!wfRating) hint.textContent='Bitte eine Bewertung (Sterne) auswählen';
+  else hint.textContent='';
+  sendBtn.disabled=!(canType && wfRating>0 && text.length>0);
+}
+async function sendWaldFeedback(){
+  const own=(document.getElementById('wf-own').value||'').trim();
+  const target=(document.getElementById('wf-target').value||'').trim();
+  const text=(document.getElementById('wf-text').value||'').trim();
+  if(!own||!target||!wfRating||!text)return;
+  localStorage.setItem(WALD_NAME_KEY,own);
+  const btn=document.getElementById('wf-send-btn');
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='Sende…';
+  const cleanId=target.replace(/[\/\s]+/g,'_');
+  try{
+    await window.fbSetDoc(window.fbDoc(window.db,'mitarbeiter',cleanId),{
+      name:target,
+      waldFeedback:window.fbArrayUnion({from:own,value:wfRating,text,ts:new Date().toISOString()})
+    },{merge:true});
+    btn.textContent='✓ Gesendet';
+    setTimeout(()=>{
+      btn.textContent=origLabel;
+      closeWfModal();
+    },900);
+  }catch(e){
+    btn.textContent='Fehler – erneut?';
+    setTimeout(()=>{btn.textContent=origLabel;updateWfState();},2000);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+window.onNoteInput=onNoteInput;
+window.onEinweisungToggle=onEinweisungToggle;
+window.openWfModal=openWfModal;
+window.closeWfModal=closeWfModal;
+window.setWfRating=setWfRating;
+window.onWfFieldInput=onWfFieldInput;
+window.sendWaldFeedback=sendWaldFeedback;
+renderWfStars(0);
+window.addEventListener('firebase-ready',startRealtimeSync);
+</script>
+</body>
+</html>
