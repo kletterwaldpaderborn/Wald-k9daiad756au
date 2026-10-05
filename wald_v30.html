@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Wald – Anmeldeübersicht – Kletterwald Paderborn</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--card:#fff;--border:rgba(0,0,0,.1);--text:#1a1a1a;--muted:#6b7280;
+  --primary:#030213;--ibg:#f3f3f5;--radius:10px;
+  --grbg:#f0fdf4;--grbr:#bbf7d0;--grtx:#166534;
+  --accent:#e9ebef;--pfg:#fff;--dest:#d4183d;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#wrap{max-width:980px;margin:0 auto;padding:20px 18px 60px}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+h1{font-size:20px;font-weight:700}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.clock{font-size:12px;color:var(--muted);text-align:right}
+.clock b{color:var(--text);font-variant-numeric:tabular-nums}
+
+.wf-cta{flex-shrink:0;margin-left:auto;align-self:center;background:#fff5f5;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;transition:background .15s;max-width:260px}
+.wf-cta:hover{background:#fee2e2}
+
+.summary{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px}
+.summary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.summary-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.summary-grid{display:flex;flex-wrap:wrap;gap:8px}
+.sum-total{font-size:32px;font-weight:800;color:var(--primary);line-height:1;font-variant-numeric:tabular-nums}
+.sum-chip{background:var(--ibg);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;display:flex;gap:6px;align-items:center}
+.sum-chip .n{color:var(--primary);font-weight:700}
+
+.wf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:200;padding:16px}
+.wf-overlay.open{display:flex}
+.wf-modal{background:var(--card);border-radius:var(--radius);padding:20px 22px;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.wf-modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.wf-field-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:8px}
+.wf-target-input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:13px;font-family:inherit;outline:none;color:var(--text)}
+.wf-target-input:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.wf-stars{display:flex;gap:4px;padding:2px 0 4px}
+.wf-textarea{width:100%;min-height:80px;resize:vertical;padding:7px 10px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:13px;font-family:inherit;outline:none;line-height:1.4;color:var(--text)}
+.wf-textarea:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.wf-textarea:disabled{opacity:.5;cursor:not-allowed}
+.wf-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px}
+.wf-hint{font-size:10px;color:var(--muted)}
+.wf-send-btn{background:var(--primary);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.wf-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.wf-cancel-btn{background:var(--ibg);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+
+.olist{display:flex;flex-direction:column;gap:9px}
+.ocard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;transition:opacity .3s,filter .3s}
+.ocard.grayed{opacity:.55;filter:grayscale(70%)}
+.oin{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.oleft{flex-shrink:0;width:190px}
+.oname{font-size:15px;font-weight:700;margin-bottom:4px}
+.ocount{display:inline-block;background:var(--grbg);color:var(--grtx);border:1px solid var(--grbr);border-radius:99px;padding:2px 9px;font-size:11px;font-weight:700;margin-bottom:5px}
+.otime{font-size:11px;color:var(--muted);line-height:1.4}
+.oright{flex:1;min-width:180px;border-left:1px solid var(--border);padding-left:12px}
+.orow{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:2px 0}
+.orow-n{color:var(--text)}.orow-q{font-weight:700;color:var(--muted);white-space:nowrap}
+.oempty-items{font-size:11px;color:var(--muted);font-style:italic}
+
+.onote-col{width:190px;flex-shrink:0;border-left:1px solid var(--border);padding-left:12px;display:flex;flex-direction:column;gap:6px}
+.onote-lbl{font-size:9px;font-weight:600;color:var(--muted);display:block}
+.note-input{width:100%;min-height:52px;resize:vertical;padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:12px;font-family:inherit;outline:none;line-height:1.4}
+.note-input:focus{border-color:#999;box-shadow:0 0 0 2px rgba(3,2,19,.08)}
+.note-input.has-note{background:#fef9c3;border-color:#facc15}
+.note-input.has-note:focus{border-color:#eab308;box-shadow:0 0 0 2px rgba(234,179,8,.18)}
+
+.cd-badge{align-self:flex-start;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.cd-badge.cd-ok{background:var(--grbg);color:var(--grtx);border:1px solid var(--grbr)}
+.cd-badge.cd-warn{background:#fefce8;color:#854d0e;border:1px solid #fde68a}
+.cd-badge.cd-exp{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+
+/* ── TOGGLE SWITCH (ersetzt Checkbox für "wichtig markieren") ── */
+.toggle-switch{position:relative;display:inline-flex;align-items:center;width:38px;height:21px;flex-shrink:0}
+.toggle-switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.toggle-switch .slider{position:absolute;inset:0;background:#9ca3af;border-radius:999px;transition:background .18s}
+.toggle-switch .slider::before{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;background:#fff;border-radius:50%;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.toggle-switch input:checked+.slider{background:#16a34a}
+.toggle-switch input:checked+.slider::before{transform:translateX(17px)}
+.toggle-switch.sm{width:30px;height:17px}
+.toggle-switch.sm .slider::before{width:11px;height:11px;left:3px;top:3px}
+.toggle-switch.sm input:checked+.slider::before{transform:translateX(13px)}
+
+/* ── RESERVIERUNGEN-BUTTON (Aktuelles-Tab) ── */
+.mres-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px;transition:background .15s,opacity .15s;color:#fff}
+.mres-btn.state-green{background:#16a34a}
+.mres-btn.state-green:hover{background:#15803d}
+.mres-btn.state-red{background:#dc2626}
+.mres-btn.state-red:hover{background:#b91c1c}
+.mres-btn.state-gray{background:#9ca3af;cursor:not-allowed;opacity:.75}
+
+.eweis-add-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.eweis-add-btn{width:38px;height:38px;border-radius:50%;background:#16a34a;color:#fff;border:none;font-size:22px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.eweis-add-btn:hover{background:#15803d}
+.eweis-add-lbl{font-size:13px;font-weight:600;color:var(--text);cursor:pointer;user-select:none}
+.ocard.eweis-card{display:flex;align-items:center;gap:12px;padding:9px 14px}
+.eweis-icon{font-size:17px;flex-shrink:0}
+.eweis-body{flex:1;min-width:0}
+.eweis-text{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.eweis-text .ocount{margin-bottom:0}
+.eweis-time{font-size:13px;font-weight:600;color:var(--muted);margin-top:3px}
+
+.oempty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#ccc;border-radius:99px}
+
+/* ── Tab-Umschalter (Anmeldungen / Aktuelles) ─────────────────────── */
+.wald-tabs{display:flex;gap:8px;margin-bottom:16px}
+.nav-btn{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:13px;font-weight:500;transition:background .15s}
+.nav-btn:hover{background:var(--accent)}
+.nav-btn.active{background:var(--primary);color:var(--pfg);border-color:var(--primary)}
+
+/* ── Mitteilungs-Tab (aus der Kasse übernommen) ──────────────────────── */
+.o-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.icoBtn{background:none;border:none;cursor:pointer;color:var(--muted);padding:2px;transition:color .15s}
+.icoBtn:hover{color:var(--dest)}.icoBtn.edit:hover{color:var(--primary)}
+.icoBtn svg{width:14px;height:14px;display:block}
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:22px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto}
+.modal.wide{max-width:620px}
+.modal h3{margin-bottom:14px}
+.mbtns{display:flex;gap:9px;margin-top:18px}
+.mbtn{flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--card);transition:background .15s}
+.mbtn:hover{background:var(--accent)}.mbtn.primary{background:var(--primary);color:var(--pfg);border-color:var(--primary)}.mbtn.primary:hover{opacity:.9}
+.mbtn:disabled{opacity:.4;cursor:not-allowed}
+.finput{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:7px;background:var(--ibg);font-size:13px;font-family:inherit;outline:none;color:var(--text)}
+
+@media (max-width:640px){
+  .oleft{width:100%}
+  .oright{border-left:none;padding-left:0;border-top:1px dashed var(--border);padding-top:8px;margin-top:4px}
+  .onote-col{width:100%;border-left:none;padding-left:0;border-top:1px dashed var(--border);padding-top:8px;margin-top:4px}
+  .wf-cta{margin-left:0;width:100%;max-width:100%}
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <div>
+      <h1>🌲 Anmeldeübersicht – Wald</h1>
+      <div class="sub">Alle Anmeldungen des heutigen Tages (Früh- &amp; Spätschicht)</div>
+    </div>
+    <div class="clock">Stand<br><b id="clock">–:–:–</b></div>
+  </header>
+
+  <div class="wald-tabs">
+    <button class="nav-btn active" id="btn-tab-anmeldungen" onclick="setWaldTab('anmeldungen')">📋 Anmeldungen</button>
+    <button class="nav-btn" id="btn-tab-aktuelles" onclick="setWaldTab('aktuelles')">💬 Aktuelles</button>
+  </div>
+
+  <div id="view-anmeldungen">
+  <div class="summary">
+    <div class="summary-top">
+      <div>
+        <div class="summary-lbl">Kletterer heute gesamt</div>
+        <div class="summary-grid" id="summary-grid"></div>
+      </div>
+      <button class="wf-cta" id="wf-cta-btn" onclick="openWfModal()">📋 Bitte hinterlasse der letzten Waldschicht ein Feedback</button>
+    </div>
+  </div>
+
+  <!-- WALD-FEEDBACK POPUP -->
+  <div class="wf-overlay" id="wf-overlay" onclick="if(event.target===this)closeWfModal()">
+    <div class="wf-modal">
+      <div class="wf-modal-title">Feedback zur letzten Waldschicht</div>
+      <label class="wf-field-lbl" for="wf-own">Dein Name</label>
+      <input type="text" id="wf-own" class="wf-target-input" placeholder="Dein Name... (Vorname Nachname)" oninput="onWfFieldInput()" autocomplete="off">
+
+      <label class="wf-field-lbl" for="wf-target">Wer hatte die letzte Waldschicht?</label>
+      <input type="text" id="wf-target" list="wf-suggestions" class="wf-target-input" placeholder="Letzte Schicht... (Vorname Nachname)" oninput="onWfFieldInput()" autocomplete="off">
+      <datalist id="wf-suggestions"></datalist>
+
+      <label class="wf-field-lbl">Bewertung</label>
+      <div id="wf-stars" class="wf-stars"></div>
+
+      <label class="wf-field-lbl" for="wf-text">Feedback</label>
+      <textarea id="wf-text" class="wf-textarea" disabled placeholder="z.B. Der Mülleimer im Wagen wurde nicht ausgeleert, der Wagen wurde abends nicht ordentlich gepackt, der Müll im Wald wurde nicht weggepickt…" oninput="onWfFieldInput()"></textarea>
+
+      <div class="wf-actions">
+        <span class="wf-hint" id="wf-hint"></span>
+        <div style="display:flex;gap:8px">
+          <button class="wf-cancel-btn" onclick="closeWfModal()">Abbrechen</button>
+          <button class="wf-send-btn" id="wf-send-btn" disabled onclick="sendWaldFeedback()">Senden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="eweis-add-row">
+    <button class="eweis-add-btn" onclick="openEinweisungModal()" title="Einweisung hinzufügen">+</button>
+    <span class="eweis-add-lbl" onclick="openEinweisungModal()">Einweisung hinzufügen</span>
+  </div>
+
+  <div class="olist" id="olist">
+    <div class="oempty">Lade Anmeldungen…</div>
+  </div>
+  </div>
+
+  <!-- MITTEILUNGEN TAB (aus der Kasse übernommen) -->
+  <div id="view-aktuelles" style="display:none">
+    <div class="o-topbar">
+      <h1 style="font-size:20px">Aktuelles</h1>
+    </div>
+    <button class="mres-btn state-gray" id="mit-reservierungen-btn" onclick="openReservierungenLink()" disabled>📋 Reservierungen ansehen</button>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px">
+      <textarea id="mit-tab-new-text" rows="2" placeholder="Neue Mitteilung schreiben…" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;resize:vertical;outline:none;font-family:inherit;margin-bottom:8px"></textarea>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none">
+          <span class="toggle-switch sm">
+            <input type="checkbox" id="mit-tab-new-wichtig">
+            <span class="slider"></span>
+          </span>
+          Als wichtig markieren
+        </label>
+        <button class="mbtn primary" style="flex:none;padding:8px 16px" onclick="sendTabMitteilung()">Senden</button>
+      </div>
+    </div>
+    <div id="mit-list"></div>
+
+    <!-- Mitarbeiterzufriedenheit -->
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">Mitarbeiterfeedback</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:16px">Bewertungen &amp; Feedback zu übergebenen Schichten &ndash; klicke auf einen Mitarbeiter für Details</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Kasse <span style="font-weight:500;text-transform:none;letter-spacing:0">(basierend auf der Ordnung, die die nächste Schicht vorfindet)</span></div>
+      <div class="olist" id="mit-leader-kasse" style="margin-bottom:24px"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Wald <span style="font-weight:500;text-transform:none;letter-spacing:0">(basierend auf der Ordnung, die die nächste Schicht vorfindet)</span></div>
+      <div class="olist" id="mit-leader-wald"></div>
+    </div>
+  </div>
+
+  <!-- MITTEILUNG: NAME ABFRAGEN -->
+  <div class="moverlay" id="m-mit-name" style="display:none" onclick="if(event.target===this)closeM('m-mit-name')">
+    <div class="modal" style="max-width:360px">
+      <h3 style="margin-bottom:10px;font-size:15px">Wie ist dein Name?</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Damit das Team weiß, von wem die Nachricht stammt.</p>
+      <input class="finput" type="text" id="mit-name-input" placeholder="Name…" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')confirmMitName()">
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="closeM('m-mit-name')" style="padding:8px 14px;background:var(--accent);border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer">Abbrechen</button>
+        <button onclick="confirmMitName()" style="padding:8px 14px;background:var(--primary);color:var(--pfg);border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer">Weiter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MITARBEITER-FEEDBACK POPUP -->
+  <div class="moverlay" id="m-mit-feedback" style="display:none" onclick="if(event.target===this)closeM('m-mit-feedback')">
+    <div class="modal" style="max-width:520px;max-height:80vh;overflow-y:auto">
+      <h3 id="mf-title" style="margin-bottom:14px">Feedback</h3>
+      <div id="mf-body"></div>
+      <div class="mbtns"><button class="mbtn" onclick="closeM('m-mit-feedback')">Schließen</button></div>
+    </div>
+  </div>
+
+  <!-- EINWEISUNG HINZUFÜGEN / BEARBEITEN -->
+  <div class="moverlay" id="m-einweisung" style="display:none" onclick="if(event.target===this)closeEinweisungModal()">
+    <div class="modal" style="max-width:380px">
+      <h3 id="ein-modal-title" style="margin-bottom:14px">Neue Einweisung</h3>
+      <label class="wf-field-lbl" for="ein-mitarbeiter">Mitarbeiter</label>
+      <input type="text" id="ein-mitarbeiter" class="wf-target-input" list="ein-mitarbeiter-suggestions" placeholder="Wer hat eingewiesen? (Vorname Nachname)" autocomplete="off" style="margin-bottom:10px">
+      <datalist id="ein-mitarbeiter-suggestions"></datalist>
+      <label class="wf-field-lbl" for="ein-anzahl">Anzahl Personen</label>
+      <input type="number" id="ein-anzahl" class="wf-target-input" min="1" step="1" placeholder="z.B. 8" style="margin-bottom:10px">
+      <label class="wf-field-lbl" for="ein-zeit">Uhrzeit</label>
+      <input type="time" id="ein-zeit" class="wf-target-input" style="margin-bottom:16px">
+      <div class="mbtns">
+        <button class="mbtn" onclick="closeEinweisungModal()">Abbrechen</button>
+        <button class="mbtn primary" onclick="saveEinweisung()">Einweisung abgeschlossen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, addDoc, deleteDoc, onSnapshot, arrayUnion, query, where, updateDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyANABs6v38UkBo_CXR_qt_KsY_1yCVr5VQ",
+  authDomain: "anmeldungensyncer.firebaseapp.com",
+  projectId: "anmeldungensyncer",
+  storageBucket: "anmeldungensyncer.firebasestorage.app",
+  messagingSenderId: "444676738503",
+  appId: "1:444676738503:web:2e0ba915c55c5305b71de2",
+  measurementId: "G-NZ80P58Y12"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.db = db;
+window.fbCollection = collection;
+window.fbDoc = doc;
+window.fbSetDoc = setDoc;
+window.fbAddDoc = addDoc;
+window.fbDeleteDoc = deleteDoc;
+window.fbOnSnapshot = onSnapshot;
+window.fbArrayUnion = arrayUnion;
+window.fbQuery = query;
+window.fbWhere = where;
+window.fbUpdateDoc = updateDoc;
+window.fbGetDoc = getDoc;
+window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<script>
+// ── HELFER ──────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtTs(d){const dt=d instanceof Date?d:new Date(d);if(!dt||isNaN(dt))return'–';return dt.toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function dateStrOf(v){const d=v instanceof Date?v:new Date(v);if(!d||isNaN(d))return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// Robuste ISO-Umwandlung: new Date(ungültigerWert).toISOString() wirft eine Exception und würde
+// dadurch die komplette Listendarstellung abbrechen (die zuvor berechnete Summe bliebe aber stehen –
+// genau das Symptom "Summe stimmt, Liste fehlt"). Bei ungültigem Zeitstempel wird stattdessen
+// die aktuelle Zeit als Fallback verwendet, damit die Anmeldung trotzdem angezeigt wird.
+function safeIso(v){const d=v instanceof Date?v:new Date(v);return isNaN(d)?new Date().toISOString():d.toISOString();}
+
+// Kiosk-Artikel (Wasser, Softdrink, Corny), Jahreskarten und "Sonstiges" (Gutschein/
+// freier Betrag) sind keine Kletterer -> ausblenden
+const YEAR_CARD_IDS=['yc45','yc611','yc1217','ycadult'];
+function isClimberItem(it){
+  if(!it) return false;
+  if(it.type==='custom') return false;
+  if(it.id && it.id.indexOf('kiosk-')===0) return false;
+  if(it.id && YEAR_CARD_IDS.indexOf(it.id)>=0) return false;
+  return true;
+}
+
+// Zwergenticket besteht aus 1 Erwachsenem + 1 Kind -> zählt als 2 Kletterer
+function climberWeight(it){ return (it && it.id==='dwarf') ? 2 : 1; }
+function climberQty(it){ return ((it&&it.qty)||0) * climberWeight(it); }
+
+// ── COUNTDOWN (2,5 Std. ab Anmeldezeitpunkt) – identisch zur Kasse ───
+function countdownInfo(tsVal){
+  const start=new Date(tsVal).getTime();
+  const totalMs=2.5*60*60*1000;
+  const remainMs=totalMs-(Date.now()-start);
+  const absMin=Math.floor(Math.abs(remainMs)/60000);
+  const h=Math.floor(absMin/60), m=absMin%60;
+  const txt=(remainMs<0?'-':'')+h+':'+String(m).padStart(2,'0');
+  let cls='cd-ok';
+  if(remainMs<=0) cls='cd-exp';
+  else if(remainMs<=15*60000) cls='cd-warn';
+  const farExpired=remainMs<=-60*60000; // -1 Std. erreicht -> Anmeldung komplett ausgrauen
+  return {txt,cls,farExpired};
+}
+function updateCountdowns(){
+  allOrders().forEach(o=>{
+    const el=document.getElementById('cd-'+o.id);
+    if(!el)return;
+    const info=countdownInfo(o.ts);
+    el.textContent=info.txt;
+    el.className='cd-badge '+info.cls;
+    const card=document.getElementById('oc-'+o.id);
+    if(card) card.classList.toggle('grayed',info.farExpired);
+  });
+}
+setInterval(updateCountdowns,15000);
+
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(updateClock,1000);updateClock();
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let liveOrders=[];        // aktuell laufende Kassenschicht (Firestore "orders")
+let archivedTodayOrders=[]; // bereits beendete Schicht(en) des heutigen Tages ("shifts")
+let notizen={};
+let notizTimers={};
+let notizenRawDocs={}; // orderId -> ts der zugehörigen Anmeldung (für Tagesgrenzen-Cleanup)
+let einweisungEntries=[]; // aus Firestore "einweisungen" – live, eigenständige, zeitlich einsortierte Einträge der laufenden Schicht
+let archivedTodayEinweisungen=[]; // bereits beendete Schicht(en) des heutigen Tages ("shifts") – Einweisungen wandern beim Schichtende mit ins Archiv
+let einweisungEditId=null; // firestoreId der aktuell im Popup bearbeiteten Einweisung (null = neue Einweisung)
+let einweisungEditSourceShiftId=null; // gesetzt, wenn der bearbeitete Eintrag aktuell in einer bereits archivierten Schicht liegt (Schicht-firestoreId), sonst null (= liegt in der laufenden "einweisungen"-Sammlung)
+// Rohe Metadaten (firestoreId + archivedAt) aller Schichten der letzten 48h – wird benötigt, um beim
+// nachträglichen Ändern der Einweisungs-Uhrzeit die passende bereits archivierte Schicht zu finden
+// (siehe findArchivedShiftForTs). Eine Schicht "endet" mit ihrem archivedAt-Zeitpunkt – analog zur
+// gleichen Logik in der Kasse (dort: latestArchivedShift / currentShiftEinweisungen).
+let recentShifts=[];
+let mitarbeiterListe=[]; // aus Firestore "mitarbeiter" – für Namensvorschläge beim Wald-Feedback + Mitarbeiterzufriedenheit
+let mitteilungen=[]; // aus Firestore "mitteilungen" – für den Aktuelles-Tab
+let reservierungslinkUrl='', reservierungslinkTs=null; // Link + Zeitpunkt aus dem Dashboard (config/reservierungslink)
+
+function allOrders(){
+  // Gelöschte Anmeldungen (in der Kasse als "gelöscht" markiert) sollen im Wald
+  // weder angezeigt noch in der Kletterer-Summe mitgezählt werden.
+  // Zusätzlich gilt: Es werden ausschließlich Anmeldungen des aktuellen Kalendertags angezeigt
+  // (Tag des Anmeldezeitpunkts ts) – unabhängig davon, in welcher Schicht sie liegen oder wann
+  // diese archiviert wurde bzw. noch läuft.
+  const today=todayStr();
+  return [...liveOrders,...archivedTodayOrders].filter(o=>!o.deleted && dateStrOf(o.ts)===today).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+}
+
+// ── FIRESTORE SYNC ───────────────────────────────────────────────────
+function startRealtimeSync(){
+  window.fbOnSnapshot(window.fbCollection(window.db,"orders"), snapshot=>{
+    liveOrders=[];
+    snapshot.forEach(d=>{
+      const data=d.data();
+      liveOrders.push({
+        firestoreId:d.id,
+        ...data,
+        ts:data.ts?(data.ts.toDate?data.ts.toDate():new Date(data.ts)):new Date()
+      });
+    });
+    render();
+  });
+
+  // Eingrenzung: Statt der kompletten, unbegrenzten "shifts"-Sammlung werden nur noch
+  // archivierte Schichten der letzten 48 Stunden angefragt (die Wald-Seite braucht ohnehin
+  // nur die heutigen Anmeldungen/Einweisungen – die 48h-Grenze ist ein großzügiger Puffer
+  // u.a. für Schichten über Mitternacht sowie Zeitzonen-/Rundungsrandfälle).
+  // WICHTIG: "archivedAt" wird an der einzigen Stelle, an der Schichten angelegt werden
+  // (kasse: confirmSchichtBeenden -> archivedAt:new Date().toISOString()), durchgängig als
+  // ISO-String geschrieben – nie als Firestore-Timestamp. Der Cutoff-Wert unten wird daher
+  // ebenfalls als ISO-String übergeben, damit der Feldtyp in der >=-Abfrage zum gespeicherten
+  // Feldtyp passt (Firestore vergleicht bei Bereichsabfragen typgenau).
+  const cutoffIso=new Date(Date.now()-48*60*60*1000).toISOString();
+  window.fbOnSnapshot(window.fbQuery(window.fbCollection(window.db,"shifts"),window.fbWhere('archivedAt','>=',cutoffIso)), snapshot=>{
+    const today=todayStr();
+    archivedTodayOrders=[];
+    archivedTodayEinweisungen=[];
+    recentShifts=[];
+    snapshot.forEach(d=>{
+      const s=d.data();
+      recentShifts.push({firestoreId:d.id,archivedAt:s.archivedAt||null});
+      // Ob eine archivierte Schicht zu "heute" gehört, wird NICHT allein am manuell im
+      // Kasse-Formular eingetragenen Datumsfeld (sDate) festgemacht: dieses Feld ist reine
+      // Handeingabe und kann fehlen/veraltet/falsch sein (das Schichtende-Formular lässt das
+      // Archivieren trotz "Datum fehlt"-Warnung zu). Wird sDate dann nicht "heute" gespeichert,
+      // fielen archivierte Anmeldungen UND Einweisungen sofort aus der Waldübersicht – obwohl die
+      // Schicht gerade eben, am heutigen Tag, beendet wurde. Daher zusätzlich der tatsächliche,
+      // automatisch gesetzte Archivierungszeitpunkt (archivedAt) als verlässlicher Fallback: Zeigt
+      // ENTWEDER das eingetragene Schichtdatum ODER der reale Archivierungszeitpunkt auf heute,
+      // gehört die Schicht zum heutigen Tag.
+      // NEU: Die Zuordnung zum heutigen Tag erfolgt nicht mehr pro Schicht, sondern pro
+      // Anmeldung bzw. Einweisung anhand ihres eigenen Zeitstempels. Wird eine Schicht erst am
+      // Folgetag archiviert, enthält sie Einträge von gestern UND ggf. von heute: Nur die
+      // heutigen bleiben in der Waldübersicht sichtbar, alle anderen fallen heraus.
+      if(Array.isArray(s.orders)){
+        // Bearbeitete Anmeldungen werden beim Speichern teils als Firestore-Timestamp-Objekt
+        // statt als ISO-String abgelegt. new Date(o.ts) kann ein solches Objekt nicht direkt
+        // umwandeln (Ergebnis: "Invalid Date" -> keine Zeit wird angezeigt). Daher wie beim
+        // Live-Orders-Listener zunächst auf .toDate() prüfen, bevor in ein Date umgewandelt wird.
+        // Der ursprüngliche Anmeldezeitpunkt (ts) bleibt dabei erhalten – der reine
+        // Bearbeitungszeitpunkt (editedTs) spielt für die Darstellung keine Rolle.
+        s.orders.forEach(o=>{
+          const oTs=o.ts?(o.ts.toDate?o.ts.toDate():new Date(o.ts)):new Date();
+          if(dateStrOf(oTs)===today) archivedTodayOrders.push({...o,ts:oTs});
+        });
+      }
+      if(Array.isArray(s.einweisungen)){
+        s.einweisungen.forEach(e=>{
+          const eTs=e.ts?(e.ts.toDate?e.ts.toDate():new Date(e.ts)):new Date();
+          if(dateStrOf(eTs)!==today) return;
+          archivedTodayEinweisungen.push({
+            firestoreId:e.firestoreId,
+            mitarbeiter:e.mitarbeiter||'',
+            anzahl:e.anzahl||0,
+            ts:eTs,
+            shiftId:d.id // Schicht, in der dieser Eintrag aktuell archiviert liegt (für's Bearbeiten nötig)
+          });
+        });
+      }
+    });
+    render();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"notizen"), snapshot=>{
+    const map={};
+    notizenRawDocs={};
+    snapshot.forEach(d=>{
+      const data=d.data();
+      map[d.id]=data.text||'';
+      // data.ts = Anmeldezeitpunkt der zugehörigen Anmeldung -> bestimmt, zu welchem Tag die Notiz gehört
+      notizenRawDocs[d.id]=data.ts||null;
+    });
+    notizen=map;
+    applyNotizenToDom();
+    purgeStaleNotizen();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"einweisungen"), snapshot=>{
+    const list=[];
+    snapshot.forEach(d=>{
+      const data=d.data();
+      list.push({firestoreId:d.id,mitarbeiter:data.mitarbeiter||'',anzahl:data.anzahl||0,ts:data.ts||data.createdAt||new Date().toISOString()});
+    });
+    einweisungEntries=list;
+    purgeStaleEinweisungen();
+    render();
+  });
+
+  window.fbOnSnapshot(window.fbCollection(window.db,"mitarbeiter"), snapshot=>{
+    mitarbeiterListe=[];
+    snapshot.forEach(d=>mitarbeiterListe.push({firestoreId:d.id,...d.data()}));
+    renderWfSuggestions();
+    if(currentWaldTab==='aktuelles')renderMitLeaderboard();
+  });
+
+  // Mitteilungen sync (für den Aktuelles-Tab)
+  window.fbOnSnapshot(window.fbCollection(window.db,"mitteilungen"), snapshot=>{
+    mitteilungen=[];
+    snapshot.forEach(d=>mitteilungen.push({firestoreId:d.id,...d.data()}));
+    if(currentWaldTab==='aktuelles')renderMitteilungen();
+  });
+
+  // Reservierungslink sync (aus dem Dashboard gepflegt)
+  window.fbOnSnapshot(window.fbDoc(window.db,"config","reservierungslink"), snap=>{
+    const data = snap.exists() ? snap.data() : {};
+    reservierungslinkUrl = data.url || '';
+    reservierungslinkTs = data.ts || null;
+    if(currentWaldTab==='aktuelles') updateReservierungenBtn();
+  });
+}
+// ── EINWEISUNGEN (eigenständige, zeitlich einsortierte Einträge) ────
+// Einweisungen gehören inhaltlich zum heutigen Tag – sobald der Kalendertag vorbei ist,
+// wird der Eintrag aus Firestore gelöscht (analog zum Notizen-Cleanup).
+function purgeStaleEinweisungen(){
+  const today=todayStr();
+  einweisungEntries.forEach(e=>{
+    if(dateStrOf(e.ts)!==today){
+      window.fbDeleteDoc(window.fbDoc(window.db,'einweisungen',e.firestoreId)).catch(()=>{});
+    }
+  });
+}
+setInterval(purgeStaleEinweisungen,5*60000);
+
+// Wandelt einen Zeitstempel in den für <input type="time"> nötigen "HH:MM"-Wert (lokale Zeit) um.
+function toTimeInputValue(v){
+  const dt=v instanceof Date?v:new Date(v);
+  if(isNaN(dt))return '';
+  return String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+}
+// Identisch zur gleichnamigen Hilfsfunktion in der Kasse: robuste Umwandlung in Millisekunden,
+// egal ob Firestore-Timestamp, Date-Objekt oder ISO-String.
+function tsMillis(t){if(!t)return 0;const d=t.toDate?t.toDate():(t instanceof Date?t:new Date(t));const ms=d.getTime();return isNaN(ms)?0:ms;}
+// Sucht unter den zuletzt archivierten Schichten diejenige, in deren Zeitfenster der übergebene
+// Zeitpunkt (ms) fällt. Eine Schicht deckt den Zeitraum bis zu ihrem eigenen archivedAt ab – die
+// richtige Schicht ist daher die mit dem KLEINSTEN archivedAt, das noch >= ms ist. Gibt es keine
+// solche (weil ms nach der letzten Archivierung liegt, also noch zur laufenden Schicht gehört),
+// wird null zurückgegeben.
+function findArchivedShiftForTs(ms){
+  let best=null,bestEnd=Infinity;
+  recentShifts.forEach(s=>{
+    const end=tsMillis(s.archivedAt);
+    if(end && end>=ms && end<bestEnd){best=s;bestEnd=end;}
+  });
+  return best;
+}
+function genEinweisungId(){return 'ein-'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+
+function renderEinMitarbeiterSuggestions(){
+  const dl=document.getElementById('ein-mitarbeiter-suggestions');
+  if(!dl)return;
+  const names=[...new Set(mitarbeiterListe.map(m=>m.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+  dl.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+}
+
+function openEinweisungModal(id){
+  einweisungEditId=id||null;
+  einweisungEditSourceShiftId=null;
+  const titleEl=document.getElementById('ein-modal-title');
+  const mEl=document.getElementById('ein-mitarbeiter');
+  const aEl=document.getElementById('ein-anzahl');
+  const zEl=document.getElementById('ein-zeit');
+  if(id){
+    // Erst in den laufenden (live) Einträgen suchen, sonst in den bereits archivierten der
+    // heutigen Schichten – beide sind über die Karten im Wald editierbar.
+    let entry=einweisungEntries.find(e=>e.firestoreId===id);
+    if(!entry){
+      entry=archivedTodayEinweisungen.find(e=>e.firestoreId===id);
+      if(entry) einweisungEditSourceShiftId=entry.shiftId;
+    }
+    titleEl.textContent='Einweisung bearbeiten';
+    mEl.value=entry?entry.mitarbeiter:'';
+    aEl.value=entry?entry.anzahl:'';
+    zEl.value=toTimeInputValue(entry?entry.ts:new Date());
+  } else {
+    titleEl.textContent='Neue Einweisung';
+    mEl.value='';
+    aEl.value='';
+    zEl.value=toTimeInputValue(new Date());
+  }
+  renderEinMitarbeiterSuggestions();
+  document.getElementById('m-einweisung').style.display='flex';
+  setTimeout(()=>mEl.focus(),50);
+}
+function closeEinweisungModal(){
+  document.getElementById('m-einweisung').style.display='none';
+  einweisungEditId=null;
+  einweisungEditSourceShiftId=null;
+}
+async function saveEinweisung(){
+  const mitarbeiter=document.getElementById('ein-mitarbeiter').value.trim();
+  const anzahl=parseInt(document.getElementById('ein-anzahl').value,10);
+  const zeitVal=document.getElementById('ein-zeit').value;
+  if(!mitarbeiter){alert('Bitte einen Mitarbeiter eintragen.');return;}
+  if(!anzahl||anzahl<1){alert('Bitte eine gültige Anzahl Personen eintragen.');return;}
+  if(!zeitVal){alert('Bitte eine gültige Uhrzeit eintragen.');return;}
+
+  const isEdit=!!einweisungEditId;
+  const editingArchived=isEdit && !!einweisungEditSourceShiftId;
+  const prev=isEdit
+    ? (editingArchived
+        ? archivedTodayEinweisungen.find(e=>e.firestoreId===einweisungEditId)
+        : einweisungEntries.find(e=>e.firestoreId===einweisungEditId))
+    : null;
+  // Basisdatum bleibt immer der Tag der (ursprünglichen) Einweisung – Einweisungen gehören
+  // konzeptionell immer zum heutigen Tag (siehe purgeStaleEinweisungen) – aus dem Formular wird
+  // nur die Uhrzeit übernommen.
+  const baseDate=(prev&&prev.ts)?new Date(prev.ts):new Date();
+  const [hh,mm]=zeitVal.split(':').map(Number);
+  const newTs=new Date(baseDate.getFullYear(),baseDate.getMonth(),baseDate.getDate(),hh,mm,0,0);
+  const newTsIso=newTs.toISOString();
+
+  // Liegt die (ggf. nachträglich zurückdatierte) Uhrzeit bereits im Zeitfenster einer schon
+  // archivierten Schicht (eine Schicht "endet" mit ihrem archivedAt), wird die Einweisung
+  // rückwirkend direkt in das entsprechende Schicht-Dokument geschrieben – analog dazu, wie
+  // die Kasse Einweisungen beim regulären Schichtende selbst archiviert. Das läuft komplett
+  // im Hintergrund mit, ohne dass im Popup etwas Besonderes auffällt.
+  const targetShift=findArchivedShiftForTs(newTs.getTime());
+  const entryForSave={firestoreId:einweisungEditId||genEinweisungId(),mitarbeiter,anzahl,ts:newTsIso};
+
+  if(editingArchived){
+    // Der bearbeitete Eintrag lag bereits in einer archivierten Schicht (oldShiftId). Da Firestores
+    // arrayRemove() exakte Wertgleichheit verlangt (unsere lokale Kopie kann z.B. bei Zeitstempeln
+    // vom gespeicherten Format abweichen), wird die Schicht stattdessen frisch gelesen, der alte
+    // Eintrag anhand seiner firestoreId lokal herausgefiltert und das Array komplett zurückgeschrieben.
+    const oldShiftId=einweisungEditSourceShiftId;
+    const oldSnap=await window.fbGetDoc(window.fbDoc(window.db,'shifts',oldShiftId));
+    if(oldSnap.exists()){
+      const data=oldSnap.data();
+      const filtered=(data.einweisungen||[]).filter(e=>e.firestoreId!==einweisungEditId);
+      if(targetShift && targetShift.firestoreId===oldShiftId){
+        // Uhrzeit bleibt im Fenster derselben Schicht -> Eintrag dort nur aktualisieren.
+        filtered.push(entryForSave);
+        await window.fbUpdateDoc(window.fbDoc(window.db,'shifts',oldShiftId),{einweisungen:filtered});
+      } else {
+        await window.fbUpdateDoc(window.fbDoc(window.db,'shifts',oldShiftId),{einweisungen:filtered});
+        if(targetShift){
+          // Uhrzeit wandert in eine ANDERE bereits archivierte Schicht.
+          await window.fbUpdateDoc(window.fbDoc(window.db,'shifts',targetShift.firestoreId),{
+            einweisungen:window.fbArrayUnion(entryForSave)
+          });
+        } else {
+          // Uhrzeit wandert zurück in die laufende (noch nicht archivierte) Schicht.
+          await window.fbAddDoc(window.fbCollection(window.db,'einweisungen'),{
+            mitarbeiter,anzahl,ts:newTsIso,createdAt:new Date().toISOString()
+          });
+        }
+      }
+    }
+  } else if(targetShift){
+    await window.fbUpdateDoc(window.fbDoc(window.db,'shifts',targetShift.firestoreId),{
+      einweisungen:window.fbArrayUnion(entryForSave)
+    });
+    if(isEdit){
+      await window.fbDeleteDoc(window.fbDoc(window.db,'einweisungen',einweisungEditId)).catch(()=>{});
+    }
+  } else if(isEdit){
+    await window.fbSetDoc(window.fbDoc(window.db,'einweisungen',einweisungEditId),{
+      mitarbeiter,anzahl,ts:newTsIso
+    });
+  } else {
+    await window.fbAddDoc(window.fbCollection(window.db,'einweisungen'),{mitarbeiter,anzahl,ts:newTsIso,createdAt:new Date().toISOString()});
+  }
+  closeEinweisungModal();
+}
+function buildEinweisungCard(e){
+  return `
+    <div class="ocard eweis-card" id="ec-${e.firestoreId}">
+      <span class="eweis-icon">🧗</span>
+      <div class="eweis-body">
+        <div class="eweis-text">Einweisung: <span class="ocount">${e.anzahl} Kletterer</span> <span class="eweis-name">${esc(e.mitarbeiter)}</span></div>
+        <div class="eweis-time">${fmtTs(e.ts)}</div>
+      </div>
+      <button class="icoBtn edit" title="Bearbeiten" onclick="openEinweisungModal('${e.firestoreId}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </button>
+    </div>`;
+}
+function applyNotizenToDom(){
+  Object.keys(notizen).forEach(id=>{
+    const el=document.getElementById('note-'+id);
+    if(!el)return;
+    if(el!==document.activeElement && el.value!==notizen[id]) el.value=notizen[id];
+    el.classList.toggle('has-note',(notizen[id]||'').trim().length>0);
+  });
+}
+function onNoteInput(orderId,tsIso){
+  const el=document.getElementById('note-'+orderId);
+  if(!el)return;
+  const val=el.value;
+  notizen[orderId]=val;
+  el.classList.toggle('has-note',val.trim().length>0);
+  clearTimeout(notizTimers[orderId]);
+  notizTimers[orderId]=setTimeout(()=>{
+    window.fbSetDoc(window.fbDoc(window.db,'notizen',orderId),{text:val,ts:tsIso,updatedAt:new Date().toISOString()});
+  },500);
+}
+
+// ── NOTIZEN-CLEANUP AM TAGESENDE ────────────────────────────────────
+// Notizen gehören inhaltlich zu einer Anmeldung eines bestimmten Tages (data.ts = Anmeldezeitpunkt).
+// Sobald der Kalendertag dieser Anmeldung vorbei ist (also nach Mitternacht), wird die Notiz
+// komplett aus Firestore gelöscht (nicht nur lokal ausgeblendet) und belegt keinen Speicher mehr.
+// Läuft sowohl bei jeder Firestore-Änderung als auch periodisch, damit die Löschung auch dann
+// greift, wenn die App über Mitternacht hinweg offen bleibt, ohne dass sich sonst etwas ändert.
+function purgeStaleNotizen(){
+  const today=todayStr();
+  Object.keys(notizenRawDocs).forEach(id=>{
+    const orderDay=dateStrOf(notizenRawDocs[id]);
+    if(orderDay && orderDay!==today){
+      window.fbDeleteDoc(window.fbDoc(window.db,'notizen',id)).catch(()=>{});
+      delete notizenRawDocs[id];
+      delete notizen[id];
+    }
+  });
+}
+setInterval(purgeStaleNotizen,5*60000);
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function buildSummary(orders){
+  let total=0;
+  orders.forEach(o=>{
+    (o.items||[]).filter(isClimberItem).forEach(it=>{
+      total+=climberQty(it);
+    });
+  });
+  const grid=document.getElementById('summary-grid');
+  grid.innerHTML=`<div class="sum-total">${total}</div>`;
+}
+
+function render(){
+  const allToday=allOrders();
+  // Anmeldungen mit Kletterer-Artikeln UND Anmeldungen auf Rechnung immer anzeigen –
+  // Rechnung-Buchungen bestehen teils nur aus einem freien "Sonstiges"-Betrag ohne
+  // einzeln erfasste Kletterer-Artikel, sollen aber trotzdem für den Wald sichtbar sein.
+  const orders=allToday.filter(o=>(o.items||[]).some(isClimberItem) || o.method==='rechnung');
+  const list=document.getElementById('olist');
+  buildSummary(allToday);
+
+  const todayEinweisungen=[
+    ...einweisungEntries.filter(e=>dateStrOf(e.ts)===todayStr()),
+    ...archivedTodayEinweisungen.map(e=>({...e,archived:true}))
+  ];
+
+  if(orders.length===0 && todayEinweisungen.length===0){
+    list.innerHTML='<div class="oempty">Noch keine Anmeldungen mit Kletterern heute vorhanden</div>';
+    return;
+  }
+
+  const orderItems=orders.map(o=>{
+    try{
+    const climberItems=(o.items||[]).filter(isClimberItem);
+    const climberCount=climberItems.reduce((s,it)=>s+climberQty(it),0);
+    const isRechnung=o.method==='rechnung';
+    let itemsHtml;
+    if(climberItems.length){
+      itemsHtml=climberItems.map(it=>`<div class="orow"><span class="orow-n">${esc(it.name)}${it.age?' ('+esc(it.age)+')':''}</span><span class="orow-q">${it.qty}×</span></div>`).join('');
+    } else if((o.items||[]).length){
+      // Keine klassifizierten Kletterer-Artikel (z.B. reine "Sonstiges"-Rechnungsbuchung) –
+      // stattdessen die vorhandenen Artikel/Posten anzeigen, damit die Buchung nachvollziehbar bleibt.
+      itemsHtml=(o.items||[]).map(it=>`<div class="orow"><span class="orow-n">${esc(it.name)}</span><span class="orow-q">${it.qty}×</span></div>`).join('');
+    } else {
+      itemsHtml='<div class="oempty-items">Keine Kletterer in dieser Anmeldung</div>';
+    }
+    const cd=countdownInfo(o.ts);
+    const tsIso=safeIso(o.ts);
+    const rechnungBadge=isRechnung?' <span style="display:inline-block;padding:2px 7px;border-radius:5px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;font-size:10px;font-weight:700;vertical-align:middle">Rechnung</span>':'';
+    const html=`
+    <div class="ocard${cd.farExpired?' grayed':''}" id="oc-${o.id}" style="${isRechnung?'background:#fff5f5;border-color:#fca5a5':''}">
+      <div class="oin">
+        <div class="oleft">
+          <div class="oname">${esc(o.name)}${rechnungBadge}</div>
+          <div class="ocount">${climberCount} Kletterer</div>
+          <div class="otime">${fmtTs(o.ts)}</div>
+        </div>
+        <div class="oright">${itemsHtml}</div>
+        <div class="onote-col">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span class="cd-badge ${cd.cls}" id="cd-${o.id}" title="Restzeit (2,5 Std. ab Anmeldung)">${cd.txt}</span>
+          </div>
+          <span class="onote-lbl">Notiz (Kasse &amp; Wald)</span>
+          <textarea class="note-input" id="note-${o.id}" placeholder="z.B. unpassende Gurte rausgegeben, Gurte waren nicht aufgezogen…" oninput="onNoteInput('${o.id}','${tsIso}')">${esc(notizen[o.id]||'')}</textarea>
+        </div>
+      </div>
+    </div>`;
+    return {ts:new Date(o.ts).getTime(),html};
+    }catch(err){
+      console.error('Fehler beim Rendern einer Anmeldung, wird übersprungen:',err,o);
+      return null;
+    }
+  }).filter(Boolean);
+
+  const einweisungItems=todayEinweisungen.map(e=>({ts:new Date(e.ts).getTime(),html:buildEinweisungCard(e)}));
+
+  const combined=[...orderItems,...einweisungItems].sort((a,b)=>b.ts-a.ts);
+  list.innerHTML=combined.map(x=>x.html).join('');
+
+  updateCountdowns();
+  applyNotizenToDom();
+}
+
+// ── LOKALER NAME DES AKTUELLEN WALDMITARBEITERS (nur localStorage, kein Server) ──
+const WALD_NAME_KEY='waldMitarbeiterName';
+function getWaldOwnName(){ return (localStorage.getItem(WALD_NAME_KEY)||'').trim(); }
+
+// ── WALD-FEEDBACK POPUP ─────────────────────────────────────────────
+let wfRating=0;
+function renderWfStars(n){
+  const box=document.getElementById('wf-stars');
+  if(!box)return;
+  let html='';
+  for(let i=1;i<=5;i++){
+    const gold=i<=n;
+    html+=`<button type="button" onclick="setWfRating(${i})" title="${i} Stern${i!==1?'e':''}" style="background:none;border:none;padding:2px;cursor:pointer;line-height:0">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="${gold?'#f5b301':'#d1d5db'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </button>`;
+  }
+  box.innerHTML=html;
+}
+function setWfRating(n){
+  wfRating=n;
+  renderWfStars(wfRating);
+  updateWfState();
+}
+function openWfModal(){
+  document.getElementById('wf-own').value=getWaldOwnName();
+  document.getElementById('wf-target').value='';
+  document.getElementById('wf-text').value='';
+  wfRating=0;
+  renderWfStars(0);
+  updateWfState();
+  document.getElementById('wf-overlay').classList.add('open');
+}
+function closeWfModal(){
+  document.getElementById('wf-overlay').classList.remove('open');
+}
+function renderWfSuggestions(){
+  const dl=document.getElementById('wf-suggestions');
+  if(!dl)return;
+  const names=[...new Set(
+    mitarbeiterListe
+      .filter(m=>Array.isArray(m.waldFeedback)&&m.waldFeedback.length>0)
+      .map(m=>m.name)
+      .filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b,'de'));
+  dl.innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+}
+function onWfFieldInput(){
+  const v=document.getElementById('wf-own').value;
+  localStorage.setItem(WALD_NAME_KEY,v);
+  updateWfState();
+}
+function updateWfState(){
+  const own=(document.getElementById('wf-own').value||'').trim();
+  const target=(document.getElementById('wf-target').value||'').trim();
+  const text=(document.getElementById('wf-text').value||'').trim();
+  const textArea=document.getElementById('wf-text');
+  const sendBtn=document.getElementById('wf-send-btn');
+  const hint=document.getElementById('wf-hint');
+  const canType=own.length>0 && target.length>0;
+  textArea.disabled=!canType;
+  if(!own) hint.textContent='Bitte deinen Namen eintragen';
+  else if(!target) hint.textContent='Bitte Namen der letzten Waldschicht eintragen';
+  else if(!wfRating) hint.textContent='Bitte eine Bewertung (Sterne) auswählen';
+  else hint.textContent='';
+  sendBtn.disabled=!(canType && wfRating>0 && text.length>0);
+}
+async function sendWaldFeedback(){
+  const own=(document.getElementById('wf-own').value||'').trim();
+  const target=(document.getElementById('wf-target').value||'').trim();
+  const text=(document.getElementById('wf-text').value||'').trim();
+  if(!own||!target||!wfRating||!text)return;
+  localStorage.setItem(WALD_NAME_KEY,own);
+  const btn=document.getElementById('wf-send-btn');
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='Sende…';
+  const cleanId=target.replace(/[\/\s]+/g,'_');
+  try{
+    await window.fbSetDoc(window.fbDoc(window.db,'mitarbeiter',cleanId),{
+      name:target,
+      waldFeedback:window.fbArrayUnion({from:own,value:wfRating,text,ts:new Date().toISOString()})
+    },{merge:true});
+    btn.textContent='✓ Gesendet';
+    setTimeout(()=>{
+      btn.textContent=origLabel;
+      closeWfModal();
+    },900);
+  }catch(e){
+    btn.textContent='Fehler – erneut?';
+    setTimeout(()=>{btn.textContent=origLabel;updateWfState();},2000);
+  }
+}
+
+// ── TAB-UMSCHALTUNG (Anmeldungen / Aktuelles) ─────────────────────
+let currentWaldTab='anmeldungen';
+function setWaldTab(v){
+  currentWaldTab=v;
+  document.getElementById('view-anmeldungen').style.display=v==='anmeldungen'?'':'none';
+  document.getElementById('view-aktuelles').style.display=v==='aktuelles'?'':'none';
+  document.getElementById('btn-tab-anmeldungen').classList.toggle('active',v==='anmeldungen');
+  document.getElementById('btn-tab-aktuelles').classList.toggle('active',v==='aktuelles');
+  if(v==='aktuelles'){renderMitteilungen();renderMitLeaderboard();updateReservierungenBtn();}
+}
+
+// ── RESERVIERUNGEN-BUTTON (Aktuelles-Tab, Link aus dem Dashboard) ────
+function linkStandClass(ts){
+  if(!ts) return 'future';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  if(isNaN(d)) return 'future';
+  const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const today = new Date(); const tDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if(dDay.getTime() === tDay.getTime()) return 'today';
+  if(dDay.getTime() < tDay.getTime()) return 'past';
+  return 'future';
+}
+function openReservierungenLink(){
+  if(!reservierungslinkUrl) return;
+  window.open(reservierungslinkUrl, '_blank');
+}
+function updateReservierungenBtn(){
+  const btn = document.getElementById('mit-reservierungen-btn');
+  if(!btn) return;
+  btn.classList.remove('state-green','state-red','state-gray');
+  if(!reservierungslinkUrl){
+    btn.classList.add('state-gray');
+    btn.disabled = true;
+    return;
+  }
+  btn.disabled = false;
+  btn.classList.add(linkStandClass(reservierungslinkTs)==='today' ? 'state-green' : 'state-red');
+}
+
+
+function closeM(id){document.getElementById(id).style.display='none';}
+
+// ── MITTEILUNGEN (Forum) – aus der Kasse übernommen ──────────────────
+let _mitPendingSend=null;
+// Offene Mitteilungen zuerst (neueste zuerst), abgeschlossene danach (neueste zuerst)
+function mitRoots(){
+  const all=mitteilungen.filter(m=>!m.parentId);
+  const open=all.filter(m=>!m.done).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const done=all.filter(m=>m.done).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  return [...open,...done];
+}
+function mitReplies(rootId){return mitteilungen.filter(m=>m.parentId===rootId).sort((a,b)=>new Date(a.ts)-new Date(b.ts));}
+
+function renderMitteilungen(){
+  const list=document.getElementById('mit-list');
+  if(!list)return;
+  const roots=mitRoots();
+  if(roots.length===0){
+    list.innerHTML='<div class="oempty">Noch keine Mitteilungen vorhanden</div>';
+    return;
+  }
+  list.innerHTML=roots.map(r=>{
+    const replies=mitReplies(r.firestoreId);
+    const done=!!r.done;
+    const wichtig=!!r.wichtig;
+    const highlight=wichtig&&!done;
+    const doneBtn=done
+      ? `<button class="icoBtn edit" title="Wieder öffnen" onclick="undoMitDone('${r.firestoreId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>`
+      : `<button class="icoBtn edit" title="Als erledigt markieren" onclick="markMitDone('${r.firestoreId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="20 6 9 17 4 12"/></svg></button>`;
+    return `<div style="background:${highlight?'#fff5f5':'var(--card)'};border:1px solid ${highlight?'#fca5a5':'var(--border)'};border-radius:var(--radius);margin-bottom:12px;overflow:hidden${done?';opacity:.55':''}">
+      ${done?`<div style="padding:5px 14px;background:var(--bg);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">✓ Abgeschlossen</div>`:''}
+      <div style="padding:12px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">
+          <span style="font-size:12px;font-weight:700;color:${highlight?'#991b1b':'var(--text)'}">${esc(r.author||'Unbekannt')}</span>
+          <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+            <span style="font-size:10px;color:${highlight?'#dc2626':'var(--muted)'};white-space:nowrap">${fmtTs(r.ts)}</span>
+            ${doneBtn}
+            <button class="icoBtn" title="Löschen" onclick="deleteMitThread('${r.firestoreId}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+          </div>
+        </div>
+        <div style="font-size:13px;white-space:pre-wrap;color:${highlight?'#991b1b':'var(--text)'}">${esc(r.text)}</div>
+      </div>
+      ${replies.length?`<div style="border-top:1px solid var(--border);background:#f3f4f6">${replies.map(rp=>`
+        <div style="padding:9px 14px 9px 26px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;gap:8px">
+            <span style="font-size:11px;font-weight:700;color:#4b5563">${esc(rp.author||'Unbekannt')}</span>
+            <span style="font-size:10px;color:#6b7280;white-space:nowrap">${fmtTs(rp.ts)}</span>
+          </div>
+          <div style="font-size:12px;white-space:pre-wrap;color:#4b5563">${esc(rp.text)}</div>
+        </div>`).join('')}</div>`:''}
+      <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:8px">
+        <input type="text" id="mit-reply-${r.firestoreId}" placeholder="Antworten…" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--ibg);font-size:12px;outline:none;font-family:inherit" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMitteilungReply('${r.firestoreId}')}">
+        <button onclick="sendMitteilungReply('${r.firestoreId}')" style="padding:7px 12px;background:var(--accent);border:none;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">Antworten</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getMitAuthor(cb){
+  // Fragt jedes Mal nach dem Namen – bewusst nicht an den Namen der Wald-Feedback-Box gekoppelt.
+  _mitPendingSend=cb;
+  document.getElementById('mit-name-input').value='';
+  document.getElementById('m-mit-name').style.display='flex';
+  setTimeout(()=>document.getElementById('mit-name-input').focus(),50);
+}
+function confirmMitName(){
+  const v=document.getElementById('mit-name-input').value.trim();
+  if(!v)return;
+  closeM('m-mit-name');
+  if(_mitPendingSend){const cb=_mitPendingSend;_mitPendingSend=null;cb(v);}
+}
+
+async function sendMitteilungReply(rootId){
+  const inp=document.getElementById('mit-reply-'+rootId);
+  const text=inp.value.trim();
+  if(!text)return;
+  getMitAuthor(async(author)=>{
+    await window.fbAddDoc(window.fbCollection(window.db,'mitteilungen'),{
+      text,author,ts:new Date().toISOString(),parentId:rootId,done:false
+    });
+    inp.value='';
+  });
+}
+async function markMitDone(id){
+  await window.fbSetDoc(window.fbDoc(window.db,'mitteilungen',id),{done:true},{merge:true});
+}
+async function undoMitDone(id){
+  await window.fbSetDoc(window.fbDoc(window.db,'mitteilungen',id),{done:false},{merge:true});
+}
+async function deleteMitThread(id){
+  const toDelete=[id,...mitteilungen.filter(m=>m.parentId===id).map(m=>m.firestoreId)];
+  await Promise.all(toDelete.map(did=>window.fbDeleteDoc(window.fbDoc(window.db,'mitteilungen',did))));
+}
+// Neue Mitteilung direkt aus dem Aktuelles-Tab verfassen (fragt nach Namen, optional "wichtig")
+async function sendTabMitteilung(){
+  const ta=document.getElementById('mit-tab-new-text');
+  const text=ta.value.trim();
+  if(!text)return;
+  const wichtig=document.getElementById('mit-tab-new-wichtig').checked;
+  getMitAuthor(async(author)=>{
+    await window.fbAddDoc(window.fbCollection(window.db,'mitteilungen'),{
+      text,author,ts:new Date().toISOString(),parentId:null,done:false,wichtig
+    });
+    ta.value='';
+    document.getElementById('mit-tab-new-wichtig').checked=false;
+  });
+}
+//Mitteilungen Ende
+
+// ── MITARBEITERZUFRIEDENHEIT – aus der Kasse übernommen ───────────────
+function starsHtml(n){
+  let h='';
+  for(let i=1;i<=5;i++){
+    h+=`<svg viewBox="0 0 24 24" width="13" height="13" fill="${i<=n?'#f5b301':'#d1d5db'}" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  }
+  return h;
+}
+function renderMitLeaderboard(){
+  const kasseBox = document.getElementById('mit-leader-kasse');
+  const waldBox = document.getElementById('mit-leader-wald');
+  if(!kasseBox || !waldBox) return;
+
+  const kasseEntries = mitarbeiterListe
+    .map(m => {
+      const ratings = Array.isArray(m.ratings) ? m.ratings : [];
+      const count = ratings.length;
+      const avg = count ? ratings.reduce((s,r)=>s+(r.value||0),0)/count : 0;
+      return { name: m.name || m.firestoreId, firestoreId: m.firestoreId, count, avg };
+    })
+    .filter(e => e.count > 0)
+    .sort((a,b) => b.avg - a.avg || b.count - a.count);
+
+  const waldEntries = mitarbeiterListe
+    .map(m => {
+      const fb = Array.isArray(m.waldFeedback) ? m.waldFeedback : [];
+      const count = fb.length;
+      const avg = count ? fb.reduce((s,r)=>s+(r.value||0),0)/count : 0;
+      return { name: m.name || m.firestoreId, firestoreId: m.firestoreId, count, avg };
+    })
+    .filter(e => e.count > 0)
+    .sort((a,b) => b.avg - a.avg || b.count - a.count);
+
+  kasseBox.innerHTML = kasseEntries.length ? kasseEntries.map((e,i) => `
+    <div class="ocard" style="margin-bottom:6px;cursor:pointer" onclick="openMitFeedback('${e.firestoreId}','kasse')">
+      <div class="oin">
+        <div class="oleft" style="width:auto;flex:1;display:flex;align-items:center;gap:12px">
+          <div style="width:26px;text-align:center;font-size:13px;font-weight:700;color:var(--muted)">${i+1}.</div>
+          <div>
+            <div class="oname" style="font-size:14px;font-weight:700">${esc(e.name)} <span style="font-size:11px;font-weight:500;color:var(--muted)">(${e.count} Bewertung${e.count!==1?'en':''})</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;padding:0 4px">
+          ${e.avg.toFixed(2)}
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="#f5b301" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+    </div>`).join('') : '<div class="oempty">Noch keine Bewertungen vorhanden</div>';
+
+  waldBox.innerHTML = waldEntries.length ? waldEntries.map((e,i) => `
+    <div class="ocard" style="margin-bottom:6px;cursor:pointer" onclick="openMitFeedback('${e.firestoreId}','wald')">
+      <div class="oin">
+        <div class="oleft" style="width:auto;flex:1;display:flex;align-items:center;gap:12px">
+          <div style="width:26px;text-align:center;font-size:13px;font-weight:700;color:var(--muted)">${i+1}.</div>
+          <div>
+            <div class="oname" style="font-size:14px;font-weight:700">${esc(e.name)} <span style="font-size:11px;font-weight:500;color:var(--muted)">(${e.count} Feedback${e.count!==1?'s':''})</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;padding:0 4px">
+          ${e.avg.toFixed(2)}
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="#f5b301" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+    </div>`).join('') : '<div class="oempty">Noch kein Wald-Feedback vorhanden</div>';
+}
+function openMitFeedback(firestoreId, category){
+  const m = mitarbeiterListe.find(x=>x.firestoreId===firestoreId);
+  if(!m) return;
+  document.getElementById('mf-title').textContent = (m.name||m.firestoreId) + ' – ' + (category==='kasse' ? 'Kasse' : 'Wald');
+  const body = document.getElementById('mf-body');
+  let entries = category==='kasse'
+    ? (Array.isArray(m.ratings)?m.ratings:[]).slice()
+    : (Array.isArray(m.waldFeedback)?m.waldFeedback:[]).slice();
+  entries.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  if(entries.length===0){
+    body.innerHTML = '<div class="oempty">Kein Feedback vorhanden</div>';
+  } else {
+    body.innerHTML = entries.map(e=>{
+      const stars = `<div style="display:flex;align-items:center;gap:3px;margin-bottom:5px">${starsHtml(e.value||0)}</div>`;
+      const text = e.text && e.text.trim() ? `<div style="font-size:12px;line-height:1.5;white-space:pre-wrap">${esc(e.text)}</div>` : '<div style="font-size:12px;color:var(--muted);font-style:italic">Kein Text hinterlassen</div>';
+      return `<div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--card)">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">${fmtTs(e.ts)}</div>
+        ${stars}${text}
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('m-mit-feedback').style.display='flex';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+window.onNoteInput=onNoteInput;
+window.openEinweisungModal=openEinweisungModal;
+window.closeEinweisungModal=closeEinweisungModal;
+window.saveEinweisung=saveEinweisung;
+window.openWfModal=openWfModal;
+window.closeWfModal=closeWfModal;
+window.setWfRating=setWfRating;
+window.onWfFieldInput=onWfFieldInput;
+window.sendWaldFeedback=sendWaldFeedback;
+window.setWaldTab=setWaldTab;
+window.closeM=closeM;
+window.confirmMitName=confirmMitName;
+window.sendMitteilungReply=sendMitteilungReply;
+window.markMitDone=markMitDone;
+window.undoMitDone=undoMitDone;
+window.deleteMitThread=deleteMitThread;
+window.sendTabMitteilung=sendTabMitteilung;
+window.openMitFeedback=openMitFeedback;
+window.openReservierungenLink=openReservierungenLink;
+renderWfStars(0);
+window.addEventListener('firebase-ready',startRealtimeSync);
+</script>
+</body>
+</html>
